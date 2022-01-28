@@ -7,6 +7,7 @@ use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TransactionController extends Controller
 {
@@ -30,7 +31,10 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'category_id' => 'required|integer',
+            'category_id' => [
+                'required',
+                Rule::exists('categories', 'id')->where('user_id', auth()->id())
+            ],
             'transaction_date' => 'required',
             'amount' => 'required|numeric',
             'description' => 'required'
@@ -65,7 +69,10 @@ class TransactionController extends Controller
     public function update(Request $request, Transaction $transaction)
     {
         $validated = $request->validate([
-            'category_id' => 'required|integer',
+            'category_id' => [
+                'required',
+                Rule::exists('categories', 'id')->where('user_id', auth()->id())
+            ],
             'transaction_date' => 'required|date',
             'amount' => 'required|numeric',
             'description' => 'required'
